@@ -22,6 +22,9 @@ public class ProductoHandler {
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(repository.findAll(), Producto.class);
+
+                //.contentType(MediaType.APPLICATION_NDJSON)  //JSON por líneas
+                //.body(repository.findAll().repeat(1000), Producto.class);  //Repetimos 1000 veces los productos
     }
 
     //ServerResponse es reactivo, por lo que se puede usar flatMap para pasar de Mono<Producto> a Mono<ServerResponse>
@@ -35,9 +38,9 @@ public class ProductoHandler {
     }
 
     public Mono<ServerResponse> crear(ServerRequest request) {
-        Mono<Producto> producto = request.bodyToMono(Producto.class); //No hace falta pasarle id en el Json de entrada
+        Mono<Producto> producto = request.bodyToMono(Producto.class);          //No hace falta pasarle id en el Json de entrada
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(repository.saveAll(producto), Producto.class);  //Guardamos el producto en MongoDB
+                .body(repository.saveAll(producto), Producto.class);           //Guardamos el producto en MongoDB
     }
 
     public Mono<ServerResponse> editar(ServerRequest request) {
@@ -56,10 +59,10 @@ public class ProductoHandler {
 
     public Mono<ServerResponse> eliminar(ServerRequest request) {
         String id = request.pathVariable("id");
-        Mono<Producto> productoDB = repository.findById(id);  //Buscamos el producto en MongoDB
-        return productoDB.flatMap(p -> repository.delete(p)  //Borramos el producto de MongoDB
-                .then(ServerResponse.noContent().build()))  //Respuesta sin cuerpo si se ha borrado bien
-                .switchIfEmpty(ServerResponse.notFound().build());  //Respuesta que no se ha encontrado el producto
+        Mono<Producto> productoDB = repository.findById(id);            //Buscamos el producto en MongoDB
+        return productoDB.flatMap(p -> repository.delete(p)    //Borramos el producto de MongoDB
+                .then(ServerResponse.noContent().build()))              //Respuesta sin cuerpo si se ha borrado bien
+                .switchIfEmpty(ServerResponse.notFound().build());      //Respuesta que no se ha encontrado el producto
     }
 
 }
