@@ -19,14 +19,15 @@ import java.util.List;
 @ToString
 public class User implements UserDetails {
 
-@Id
-    private Long id;
+    @Id
+    private String id;
 
+    @Indexed(unique = true)  // Para optimizar las búsquedas por username
     private String username;
 
     private String password;
 
-    @Indexed(unique = true)
+    @Indexed(unique = true)  // Para que no haya emails repetidos
     private String email;
 
 

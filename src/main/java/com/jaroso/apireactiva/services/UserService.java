@@ -27,12 +27,18 @@ public class UserService {
 
     public Mono<User> save(UserRegisterDTO userRegisterDTO) {
         User user = new User();
-        user.setUsername(userRegisterDTO.username());
         user.setEmail(userRegisterDTO.email());
-        user.setPassword(this.passwordEncoder.encode(userRegisterDTO.password()));
-        return this.userRepository.save(user);
+        user.setUsername(userRegisterDTO.username());
+        // Encripta la contraseña antes de guardarla
+        user.setPassword(passwordEncoder.encode(userRegisterDTO.password()));
+
+        return userRepository.save(user);
+
     }
 
+    public boolean passwordMatches(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
 
 
 }
