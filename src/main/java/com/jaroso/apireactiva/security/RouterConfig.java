@@ -5,7 +5,9 @@ import com.jaroso.apireactiva.handlers.UserHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.web.reactive.config.CorsRegistry;
@@ -14,7 +16,9 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -49,14 +53,14 @@ public class RouterConfig implements WebFluxConfigurer {
      * @return
      */
     @Bean
-    SecurityWebFilterChain webHttpSecurity(ServerHttpSecurity http) {
+    SecurityWebFilterChain webHttpSecurity(ServerHttpSecurity http, JwtAuthenticationFilter jwtFilter) {
         http
                 .securityMatcher(new PathPatternParserServerWebExchangeMatcher("/api/**"))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/productos/**").permitAll()  // Rutas públicas para productos aún no tengo token, quitar luego
                         .pathMatchers("/api/users/**").permitAll()  // Rutas públicas para autenticación/registro
                         .anyExchange().authenticated()
                 )
+                .addFilterBefore(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(withDefaults());
         return http.build();

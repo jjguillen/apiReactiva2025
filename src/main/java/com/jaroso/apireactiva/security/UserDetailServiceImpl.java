@@ -1,11 +1,12 @@
 package com.jaroso.apireactiva.security;
 
-import com.jaroso.apireactiva.entities.User;
 import com.jaroso.apireactiva.services.UserService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+@Service
 public class UserDetailServiceImpl implements ReactiveUserDetailsService {
 
     private final UserService userService;
